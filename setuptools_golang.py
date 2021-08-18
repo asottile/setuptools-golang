@@ -174,7 +174,11 @@ def _get_build_extension_method(
     return build_extension
 
 
-def _get_build_ext_cls(base: Type[_build_ext], root: str, strip: bool) -> Type[_build_ext]:
+def _get_build_ext_cls(
+        base: Type[_build_ext],
+        root: str,
+        strip: bool,
+) -> Type[_build_ext]:
     attrs = {'build_extension': _get_build_extension_method(base, root, strip)}
     return type('build_ext', (base,), attrs)
 

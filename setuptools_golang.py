@@ -129,7 +129,7 @@ def _get_build_extension_method(
             raise OSError(
                 f'Error building extension `{ext.name}`: '
                 f'sources must be a single file in the `main` package.\n'
-                f'Recieved: {ext.sources!r}',
+                f'Received: {ext.sources!r}',
             )
 
         main_file, = ext.sources

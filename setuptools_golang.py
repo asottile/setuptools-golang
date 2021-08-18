@@ -189,7 +189,7 @@ def set_build_ext(
         value: Dict[str, Any],
 ) -> None:
     root: str = value['root']
-    strip: bool = value.get('strip', False)
+    strip: bool = value.get('strip', True)
     base = dist.cmdclass.get('build_ext', _build_ext)
     dist.cmdclass['build_ext'] = _get_build_ext_cls(base, root, strip)
 

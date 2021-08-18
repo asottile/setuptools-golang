@@ -113,6 +113,7 @@ def _check_call(cmd: Tuple[str, ...], cwd: str, env: Dict[str, str]) -> None:
 def _get_build_extension_method(
         base: Type[_build_ext],
         root: str,
+        strip: bool,
 ) -> Callable[[_build_ext, Extension], None]:
     def build_extension(self: _build_ext, ext: Extension) -> None:
         # If there are no .go files then the parent should handle this
@@ -159,28 +160,34 @@ def _get_build_extension_method(
                 ),
                 'CGO_LDFLAGS': _get_ldflags(),
             })
-            cmd_build = (
+
+            cmd_build: Tuple[str, ...] = (
                 'go', 'build', '-buildmode=c-shared',
                 '-o', os.path.abspath(self.get_ext_fullpath(ext.name)),
             )
+            # "-s" omits the symbol table and debug information
+            # "-w" omits DWARF debugging information
+            cmd_build = (*cmd_build, '-ldflags=-s -w') if strip else cmd_build
+
             _check_call(cmd_build, cwd=pkg_path, env=env)
 
     return build_extension
 
 
-def _get_build_ext_cls(base: Type[_build_ext], root: str) -> Type[_build_ext]:
-    attrs = {'build_extension': _get_build_extension_method(base, root)}
+def _get_build_ext_cls(base: Type[_build_ext], root: str, strip: bool) -> Type[_build_ext]:
+    attrs = {'build_extension': _get_build_extension_method(base, root, strip)}
     return type('build_ext', (base,), attrs)
 
 
 def set_build_ext(
         dist: Distribution,
         attr: str,
-        value: Dict[str, str],
+        value: Dict[str, Any],
 ) -> None:
-    root = value['root']
+    root: str = value['root']
+    strip: bool = value.get('strip', False)
     base = dist.cmdclass.get('build_ext', _build_ext)
-    dist.cmdclass['build_ext'] = _get_build_ext_cls(base, root)
+    dist.cmdclass['build_ext'] = _get_build_ext_cls(base, root, strip)
 
 
 GOLANG = 'https://storage.googleapis.com/golang/go{}.linux-amd64.tar.gz'

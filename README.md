@@ -24,7 +24,12 @@ This requires python >= 3.6.  It is currently tested against python3 and pypy3.
 
 Add `setuptools-golang` to the `setup_requires` in your setup.py and
 `build_golang={'root': ...}`.  `root` refers to the root go import path of
-your project.
+your project. 
+
+Optional you could also strip the created extensions by adding `'strip': True`
+to `build_golang`. This will reduce the size of the extension but you will
+lose debugging information and symbols. By default, it will not strip.
+
 
 An extension must be a single file in the `main` go package (though the entire
 `main` package will be built into the extension).  That package may import

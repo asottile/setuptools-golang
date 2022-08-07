@@ -231,7 +231,7 @@ def build_manylinux_wheels(
             'docker', 'run', '--rm',
             '--volume', f'{os.path.abspath("dist")}:/dist:rw',
             '--user', f'{os.getuid()}:{os.getgid()}',
-            'quay.io/pypa/manylinux1_x86_64:latest',
+            'quay.io/pypa/manylinux2010_x86_64:latest',
             'bash', '-o', 'pipefail', '-euxc',
             SCRIPT.format(golang=golang, pythons=pythons),
         ),

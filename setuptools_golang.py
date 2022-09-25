@@ -89,7 +89,10 @@ def _get_ldflags() -> str:
 
         for lflag in LFLAGS:  # pragma: no cover (platform specific)
             try:
-                subprocess.check_call((cc, testf, lflag), cwd=tmpdir)
+                subprocess.check_call(
+                    (cc, testf, lflag), cwd=tmpdir,
+                    stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                )
                 return lflag
             except subprocess.CalledProcessError:
                 pass

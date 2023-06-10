@@ -63,6 +63,8 @@ def venv(tmpdir_factory):
     run('virtualenv', venv.strpath, '-p', sys.executable)
     # Install this so we can get coverage
     run(pip, 'install', 'covdefaults>=1.2.0', 'coverage-enable-subprocess')
+    # Install wheel as well so we can non-pep517
+    run(pip, 'install', 'wheel')
     # Install us!
     run(pip, 'install', '-e', '.')
     yield auto_namedtuple(venv=venv, pip=pip, python=python)

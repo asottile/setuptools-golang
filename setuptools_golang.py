@@ -101,10 +101,7 @@ def _get_ldflags() -> str:
 
 def _check_call(cmd: tuple[str, ...], cwd: str, env: dict[str, str]) -> None:
     envparts = [f'{k}={shlex.quote(v)}' for k, v in sorted(tuple(env.items()))]
-    print(
-        '$ {}'.format(' '.join(envparts + [shlex.quote(p) for p in cmd])),
-        file=sys.stderr,
-    )
+    print(f'$ {" ".join(envparts)} {shlex.join(cmd)}', file=sys.stderr)
     subprocess.check_call(cmd, cwd=cwd, env=dict(os.environ, **env))
 
 

@@ -76,27 +76,26 @@ def _get_ldflags() -> str:
     """
     # windows gcc does not support linking with unresolved symbols
     if sys.platform == 'win32':  # pragma: win32 cover
-        prefix = getattr(sys, 'real_prefix', sys.prefix)
-        libs = os.path.join(prefix, 'libs')
-        return '-L{} -lpython{}{}'.format(libs, *sys.version_info[:2])
+        libs = os.path.join(sys.base_prefix, 'libs')
+        return f'-L{libs} -lpython{sys.version_info[0]}'
+    else:  # pragma: win32 no cover
+        cc = subprocess.check_output(('go', 'env', 'CC')).decode().strip()
 
-    cc = subprocess.check_output(('go', 'env', 'CC')).decode('UTF-8').strip()
+        with _tmpdir() as tmpdir:
+            testf = os.path.join(tmpdir, 'test.c')
+            with open(testf, 'w') as f:
+                f.write('int f(int); int main(void) { return f(0); }\n')
 
-    with _tmpdir() as tmpdir:
-        testf = os.path.join(tmpdir, 'test.c')
-        with open(testf, 'w') as f:
-            f.write('int f(int); int main(void) { return f(0); }\n')
-
-        for lflag in LFLAGS:  # pragma: no cover (platform specific)
-            try:
-                subprocess.check_call((cc, testf, lflag), cwd=tmpdir)
-                return lflag
-            except subprocess.CalledProcessError:
-                pass
-        else:  # pragma: no cover (platform specific)
-            # wellp, none of them worked, fall back to gcc and they'll get a
-            # hopefully reasonable error message
-            return LFLAG_GCC
+            for lflag in LFLAGS:  # pragma: no cover (platform specific)
+                try:
+                    subprocess.check_call((cc, testf, lflag), cwd=tmpdir)
+                    return lflag
+                except subprocess.CalledProcessError:
+                    pass
+            else:  # pragma: no cover (platform specific)
+                # wellp, none of them worked, fall back to gcc and they'll get
+                # a hopefully reasonable error message
+                return LFLAG_GCC
 
 
 def _check_call(cmd: tuple[str, ...], cwd: str, env: dict[str, str]) -> None:

@@ -16,7 +16,7 @@ This requires python >= 3.7.  It is currently tested against python3 and pypy3.
 
 - linux
 - macOS
-- win32 (32 bit cpython, 32 bit go 1.10+)
+- win32
 
 ## Usage
 

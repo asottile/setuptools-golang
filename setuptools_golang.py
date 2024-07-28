@@ -28,10 +28,11 @@ def rmtree(path: str) -> None:
     def handle_remove_readonly(
             func: Callable[..., Any],
             path: str,
-            exc: tuple[type[OSError], OSError, TracebackType],
+            exc: tuple[type[BaseException], BaseException, TracebackType],
     ) -> None:
         excvalue = exc[1]
         if (
+                isinstance(excvalue, OSError) and
                 func in (os.rmdir, os.remove, os.unlink) and
                 excvalue.errno == errno.EACCES
         ):

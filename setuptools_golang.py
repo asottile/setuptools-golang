@@ -45,7 +45,7 @@ def rmtree(path: str) -> None:
 
 
 @contextlib.contextmanager
-def _tmpdir() -> Generator[str, None, None]:
+def _tmpdir() -> Generator[str]:
     tempdir = tempfile.mkdtemp()
     try:
         yield tempdir

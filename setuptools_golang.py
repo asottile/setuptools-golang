@@ -189,12 +189,12 @@ def _get_build_ext_cls(
 ) -> type[_build_ext]:
     attrs = {
         'build_extension': _get_build_extension_method(
-                base, 
-                root, 
-                strip, 
-                extra_cflags, 
-                extra_ldflags
-            )
+            base,
+            root,
+            strip,
+            extra_cflags,
+            extra_ldflags,
+        ),
     }
     return type('build_ext', (base,), attrs)
 

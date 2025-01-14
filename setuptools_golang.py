@@ -109,6 +109,8 @@ def _get_build_extension_method(
         base: type[_build_ext],
         root: str,
         strip: bool,
+        extra_cflags: str = '',
+        extra_ldflags: str = '',
 ) -> Callable[[_build_ext, Extension], None]:
     def build_extension(self: _build_ext, ext: Extension) -> None:
         # If there are no .go files then the parent should handle this
@@ -149,11 +151,19 @@ def _get_build_extension_method(
             cmd_get = ('go', 'get', '-d')
             _check_call(cmd_get, cwd=pkg_path, env=env)
 
+            build_cflags = _get_cflags(
+                self.compiler, ext.define_macros or (),
+            )
+            if extra_cflags:
+                build_cflags = f'{extra_cflags} {build_cflags}'
+
+            build_ldflags = _get_ldflags()
+            if extra_ldflags:
+                build_ldflags = f'{extra_ldflags} {build_ldflags}'
+
             env.update({
-                'CGO_CFLAGS': _get_cflags(
-                    self.compiler, ext.define_macros or (),
-                ),
-                'CGO_LDFLAGS': _get_ldflags(),
+                'CGO_CFLAGS': build_cflags,
+                'CGO_LDFLAGS': build_ldflags,
             })
 
             cmd_build: tuple[str, ...] = (
@@ -174,8 +184,18 @@ def _get_build_ext_cls(
         base: type[_build_ext],
         root: str,
         strip: bool = True,
+        extra_cflags: str = '',
+        extra_ldflags: str = '',
 ) -> type[_build_ext]:
-    attrs = {'build_extension': _get_build_extension_method(base, root, strip)}
+    attrs = {
+        'build_extension': _get_build_extension_method(
+                base, 
+                root, 
+                strip, 
+                extra_cflags, 
+                extra_ldflags
+            )
+    }
     return type('build_ext', (base,), attrs)
 
 

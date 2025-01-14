@@ -77,6 +77,7 @@ SUM = 'import {0}; print({0}.sum(1, 2))'
     ('pkg', 'mod'),
     (
         (os.path.join('testing', 'sum'), 'sum'),
+        (os.path.join('testing', 'sum_flag'), 'sum_flag'),
         (os.path.join('testing', 'sum_pure_go'), 'sum_pure_go'),
         (os.path.join('testing', 'sum_sub_package'), 'sum_sub_package.sum'),
     ),
